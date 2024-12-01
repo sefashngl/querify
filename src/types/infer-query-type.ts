@@ -1,7 +1,7 @@
 import { DB } from "../generated-types";
 import { Tables } from "../generated-types";
 import { AggregateFunction, AggregateReturnType } from "./aggregation";
-import { Column, SelectColumn } from "./column";
+import { Column, SelectColumn, SelectColumnWithAlias } from "./column";
 
 type IsWildcard<T, MA extends string> = T extends `${MA}.*` ? true : false;
 
@@ -23,23 +23,24 @@ export type InferQueryType<
   MT extends Tables,
   MA extends string,
   JT extends Record<string, Tables>,
-  Cols extends readonly (
-    | SelectColumn<MT, MA, JT>
-    | [SelectColumn<MT, MA, JT>, string]
-    | readonly [AggregateFunction, Column<MT, MA, JT>, string]
-  )[]
+  Cols extends readonly SelectColumnWithAlias<MT, MA, JT>[]
 > = true extends IsWildcard<Cols[number], MA>
   ? DB[MT] & {
       [K in Extract<
         Cols[number], 
         | [SelectColumn<MT, MA, JT>, string]
         | readonly [AggregateFunction, Column<MT, MA, JT>, string]
+        | readonly ["RAW", string, any[], string]
       > as K extends readonly [AggregateFunction, any, infer Alias]
+        ? Alias & string
+        : K extends readonly ["RAW", any, any, infer Alias]
         ? Alias & string
         : K extends [infer Original, infer Alias]
         ? Alias & string
         : never]: K extends readonly [AggregateFunction, infer Column, any]
         ? InferAggregateType<K[0], Column & string, MT, MA, JT>
+        : K extends readonly ["RAW", any, any, any]
+        ? any
         : K extends [infer Original, any]
         ? Original extends `${MA}.${infer ColName}`
           ? DB[MT][ColName & keyof DB[MT]]
@@ -53,12 +54,16 @@ export type InferQueryType<
   : {
       [K in Cols[number] as K extends readonly [AggregateFunction, any, infer Alias]
         ? Alias & string
+        : K extends readonly ["RAW", any, any, infer Alias]
+        ? Alias & string
         : K extends [infer Original, infer Alias]
         ? Alias & string
         : K extends `${MA}.${infer ColName}`
         ? ColName
         : never]: K extends readonly [AggregateFunction, infer Column, any]
         ? InferAggregateType<K[0], Column & string, MT, MA, JT>
+        : K extends readonly ["RAW", any, any, any]
+        ? any
         : K extends [infer Original, any]
         ? Original extends `${MA}.${infer ColName}`
           ? DB[MT][ColName & keyof DB[MT]]

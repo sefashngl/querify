@@ -22,7 +22,8 @@ export type SelectColumnWithAlias<
   MT extends Tables,
   MA extends string,
   JT extends Record<string, Tables>
-> = 
-  | SelectColumn<MT, MA, JT> 
+> =
+  | SelectColumn<MT, MA, JT>
   | [SelectColumn<MT, MA, JT>, string]
-  | [AggregateFunction, Column<MT, MA, JT>, string];
+  | [AggregateFunction, Column<MT, MA, JT>, string]
+  | ["RAW", string, any[], string];
