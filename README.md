@@ -125,7 +125,6 @@ All values are automatically escaped and sanitized:
 // Safe: Values are automatically escaped
 from('users', 'u')
   .where([['u.email', '=', "'; DROP TABLE users; --"]])
-// Generates: SELECT * FROM users u WHERE u.email = '''; DROP TABLE users; --'
 ```
 
 ## API Reference
