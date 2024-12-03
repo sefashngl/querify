@@ -17,5 +17,9 @@
   "dependencies": {
     "@sqltools/formatter": "^1.2.5",
     "ts-node": "^10.9.2"
+  },
+  "peerDependencies": {
+    "pg": ">=8.0.0",
+    "@types/pg": ">=8.0.0"
   }
 }

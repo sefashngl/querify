@@ -10,7 +10,8 @@ export type AggregateFunction =
   | "ARRAY_AGG"
   | "STRING_AGG"
   | "JSON_AGG"
-  | "JSON_OBJECT_AGG";
+  | "JSON_OBJECT_AGG"
+  | "INITCAP";
 
 export type AggregateReturnType<F extends AggregateFunction, T> = 
   F extends "COUNT" ? number :
